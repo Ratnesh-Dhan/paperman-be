@@ -1,0 +1,14 @@
+venv/
+node_modules/
+.env
+papers/
+*.pdf
+*.txt
+*.docx
+*.doc
+*.xls
+*.xlsx
+*.pptx
+*.ppt
+*.odt
+*.odp
