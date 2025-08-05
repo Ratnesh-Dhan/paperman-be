@@ -5,3 +5,4 @@ papers/
 *.pdf
 *.pyc
 __pycache__/
+vector_store/
