@@ -38,11 +38,11 @@ app.post("/ask", async (req, res) => {
       if (done) break;
 
       const text = decoder.decode(value, { stream: true });
-      console.log(text);
-      res.write(`data: ${text}\n\n`);
+      process.stdout.write(text); // Use process.stdout.write to avoid newlines
+      res.write(text);
       res.flush?.(); // Important for streaming
     }
-    res.write("data: [DONE]\n\n");
+    res.write("\n[DONE]");
     res.end();
   } catch (error) {
     console.error("Error:", error);
