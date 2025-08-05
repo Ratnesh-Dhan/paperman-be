@@ -3,7 +3,11 @@ const cors = require("cors");
 const app = express();
 const axios = require("axios");
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "*",
+  })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {
@@ -12,15 +16,19 @@ app.get("/", (req, res) => {
 
 app.post("/ask", async (req, res) => {
   const userQuery = req.body.query;
-
+  console.log("We are inside the ask endpoint");
+  console.log(userQuery);
   try {
-    const response = await axios.post("https://localhost:8000/query", {
-      data: { query: userQuery },
-      headers: {
-        "content-type": "application/json",
-      },
-    });
-
+    const response = await axios.post(
+      "http://localhost:8000/query",
+      { query: userQuery },
+      {
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
+    console.log(response.data);
     res.json(response.data);
   } catch (error) {
     console.error("Error:", error);

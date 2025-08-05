@@ -19,7 +19,13 @@ app.add_middleware(
 class Query(BaseModel):
     query: str
 
-    @app.post("/query")
-    async def query_endpoint(data: Query):
+@app.post("/query")
+async def query_endpoint(data: Query):
+    try:
+        print("We are inside the query endpoint")
+        print(data)
         result = RAGEngine.query(data.query)
         return {"answer": result}
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}
