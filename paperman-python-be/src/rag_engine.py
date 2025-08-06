@@ -3,14 +3,20 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
 from llama_index.core.storage.storage_context import StorageContext
 from typing import AsyncGenerator
-from llama_index.core.base.response.schema import RESPONSE_TYPE
-# from llama_index.vector_stores.faiss import FaissVectorStore
-# import faiss
+from llama_index.core.prompts import RichPromptTemplate
 
 class RAGEngine:
     def __init__(self):
-        # documents = SimpleDirectoryReader("papers").load_data()
 
+        rich_promt = RichPromptTemplate("""
+                "Youre name is 'paperman' and you assistant in scientific laboratory.\n"
+                "Use the following context to answer the question as accurately as possible.\n"
+                "If you don't know the answer, say you don't have the context for that.\n\n"
+                "Context:\n{context_str}\n\n"
+                "Question: {query_str}\n\n"
+                "Answer:"
+            """
+        )
         # Embeddings
         Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
          
@@ -27,24 +33,11 @@ class RAGEngine:
         Settings.chunk_size = 512
         Settings.chunk_overlap = 50
 
-        # # FAISS setup
-        # index_flat = faiss.IndexFlatL2(384)
-        # vector_store = FaissVectorStore(faiss_index=index_flat)
-        # storage_context = StorageContext.from_defaults(vector_store=vector_store)
 
-        # Service + Index
-        # index = VectorStoreIndex.from_documents(
-        #     documents,
-        #     storage_context=storage_context,
-        # )
         storage_context = StorageContext.from_defaults(persist_dir="vector_store")
         index = load_index_from_storage(storage_context)
         
-        self.query_engine = index.as_query_engine(streaming=True, similarity_top_k=5)
-
-    # def query(self, query: str) -> str:
-    #     response = self.query_engine.query(query)
-    #     return str(response)
+        self.query_engine = index.as_query_engine(streaming=True, similarity_top_k=5, text_qa_template=rich_promt)
 
     async def query(self, query: str) -> AsyncGenerator[str, None]:
         try:

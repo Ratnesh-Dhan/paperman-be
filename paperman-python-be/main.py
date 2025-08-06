@@ -1,14 +1,15 @@
 # uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
 from src.rag_engine import RAGEngine
+from src.chat_engine import ChatEngine
 from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
-from typing import AsyncGenerator
 
 app = FastAPI()
 RAGEngine = RAGEngine()
+CHATEngine = ChatEngine()
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +21,17 @@ app.add_middleware(
 
 class Query(BaseModel):
     query: str
+
+@app.post("/chat")
+async def chat_endpoint(data: Query):
+    try:
+        print("we are inside chat endpoint.")
+        print("Query: ", data.query)
+        return StreamingResponse(CHATEngine.query(data.query), media_type="event-stream")
+    except Exception as e:
+        print(e)
+        print("Error here")
+        return {"error": str(e)}
 
 @app.post("/query")
 async def query_endpoint(data: Query):

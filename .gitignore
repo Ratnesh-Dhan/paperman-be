@@ -6,3 +6,4 @@ papers/
 *.pyc
 __pycache__/
 vector_store/
+.vscode/
