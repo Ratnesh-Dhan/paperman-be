@@ -8,7 +8,8 @@ class Ingestion:
 
     def ingest(self):
         documents = SimpleDirectoryReader("../../papers").load_data()
-        Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        # Settings.embed_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+        Settings.embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
         Settings.llm = Ollama(
             model="phi3:3.8b",
             # model="phi3:mini",

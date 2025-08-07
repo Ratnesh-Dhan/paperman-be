@@ -42,7 +42,7 @@ app.post("/chat", async (req, res) => {
       res.write(text);
       res.flush?.(); // Important for streaming
     }
-    res.write("\n[DONE]");
+    // res.write("\n[DONE]");
     res.end();
   } catch (error) {
     console.error("Error:", error);
@@ -79,11 +79,33 @@ app.post("/ask", async (req, res) => {
       res.write(text);
       res.flush?.(); // Important for streaming
     }
-    res.write("\n[DONE]");
+    // res.write("\n[DONE]");
     res.end();
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+app.get("/test", (req, res) => {
+  try {
+    fetch("http://localhost:8000/test", {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        console.log(data["message"]);
+        res.status(200).json(data); // Send the response data to the frontend
+      })
+      .catch((error) => {
+        console.error("Error fetching from backend:", error);
+        res.status(404).json({ error: "Internal server error" });
+      });
+  } catch (e) {
+    console.log(`Error in testing: ${e}`);
   }
 });
 

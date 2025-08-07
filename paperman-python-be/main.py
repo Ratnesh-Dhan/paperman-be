@@ -27,7 +27,7 @@ async def chat_endpoint(data: Query):
     try:
         print("we are inside chat endpoint.")
         print("Query: ", data.query)
-        return StreamingResponse(CHATEngine.query(data.query), media_type="event-stream")
+        return StreamingResponse(CHATEngine.chat(data.query), media_type="event-stream")
     except Exception as e:
         print(e)
         print("Error here")
@@ -51,5 +51,12 @@ async def query_endpoint(data: Query):
         print(e)
         return {"error": str(e)}
     
+@app.get("/test")
+def test_endpoint():
+    try:
+        return {"message": "Python server is running"}
+    except Exception as e:
+        print(f"Error in testing: {e}")
+        return {"error": "Internal server error"}
 # if __name__ == "__main__":
 #     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True) # reload=True is used to reload the server when the code is changed
