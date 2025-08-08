@@ -38,14 +38,6 @@ async def query_endpoint(data: Query):
     try:
         print("We are inside the query endpoint")
         print("Query: ", data.query)
-
-        # async def generate() -> AsyncGenerator[str, None]:
-        #     for chunk in RAGEngine.query(data.query):
-        #         print(chunk, end="", flush=True) 
-        #         yield chunk
-
-        # return StreamingResponse(generate(), media_type="text/plain")
-        # return StreamingResponse(generate(), media_type="event-stream")
         return StreamingResponse(RAGEngine.query(data.query), media_type="event-stream")
     except Exception as e:
         print(e)
@@ -56,7 +48,5 @@ def test_endpoint():
     try:
         return {"message": "Python server is running"}
     except Exception as e:
-        print(f"Error in testing: {e}")
-        return {"error": "Internal server error"}
-# if __name__ == "__main__":
-#     uvicorn.run(app, host="0.0.0.0", port=8000, reload=True) # reload=True is used to reload the server when the code is changed
+        exception_name = type(e).__name__
+        print("Error in testing : ",exception_name)
