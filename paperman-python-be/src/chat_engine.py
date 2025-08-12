@@ -22,9 +22,10 @@ class ChatEngine:
         # self.retriever = index.as_retriever()
         # self.chat_engine = index.as_chat_engine(streaming=True)
 
-        persist_dir = "./vector_store2"
+        persist_dir = r"C:\Users\NDT Lab\Software\SCIENTIFIC-RAG\paperman-be\paperman-python-be\vector_store"
         docstore = SimpleDocumentStore.from_persist_dir(persist_dir=persist_dir)
         vector_store = SimpleDocumentStore.from_persist_dir(persist_dir)
+        # vector_store = SimpleVectorStore.from_persist_dir(persist_dir)
         kvstore = SimpleKVStore.from_persist_path(persist_dir)
 
         storage_context = StorageContext.from_defaults(

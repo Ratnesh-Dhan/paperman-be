@@ -10,6 +10,8 @@ from llama_index.core.vector_stores.simple import SimpleVectorStore
 from llama_index.llms.ollama import Ollama
 import os
 
+from llama_index.vector_stores.faiss import FaissVectorStore
+
 class Ingestion:
     def __init__(self, my_llm):
         self.llm = my_llm
@@ -92,6 +94,34 @@ class Ingestion:
         except Exception as e:
             print(f"Error in ingestion pipeline: {e}")
 
+    def proper_ingestion_pipeline(self):
+        try:
+            loader = SimpleDirectoryReader(
+                input_dir=self.database,
+                recursive=True
+            )
+            documents = loader.load_data()
+            splitter = SentenceSplitter(chunk_size=800, chunk_overlap=200)
+            nodes = splitter.get_nodes_from_documents(documents)
+            # Metadata Enrichment ( tagging each chunk with souce )
+            for node in nodes:
+                node.metadata['source'] = node.metadata.get("file_name", "unknown")
+                node.metadata['page_number'] = node.metadata.get("page_label", "N/A")
+
+            # Embedding + vector store
+            embeding_model = HuggingFaceEmbedding(model_name="BAAI/bge-small-en-v1.5")
+
+            # Faiss persistance store
+            faiss_store = FaissVectorStore.from_documents(
+                nodes,
+                embed_model=embeding_model,
+                index_path="../vector_store3/vector_index.faiss"
+            )
+            faiss_store.save("vector_index.faiss")
+        except Exception as e:
+            print(f"Error in proper_ingestion_pipeline: {e}")
+
+
 if __name__ == "__main__":
     ingestion = Ingestion(my_llm="phi3:3.8b")
-    ingestion.ingestion_pipline()
+    ingestion.proper_ingestion_pipeline()
