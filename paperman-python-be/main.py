@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
+import uvicorn
 
 app = FastAPI()
 RAGEngine = RAGEngine()
@@ -50,3 +51,10 @@ def test_endpoint():
     except Exception as e:
         exception_name = type(e).__name__
         print("Error in testing : ",exception_name)
+
+@app.get("/")
+def test_run_endpoint():
+    return {"Python server is running smoothly on server 8000"}
+
+if __name__ == "__main__":
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")

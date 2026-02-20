@@ -1,9 +1,11 @@
-from llama_index.core import load_index_from_storage, Settings
+from llama_index.core import load_index_from_storage, Settings, StorageContext
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from llama_index.llms.ollama import Ollama
-from llama_index.core.storage.storage_context import StorageContext
+# from llama_index.core.storage.storage_context import StorageContext
+from llama_index.vector_stores.faiss import FaissVectorStore
 from typing import AsyncGenerator
 from llama_index.core.prompts import RichPromptTemplate
+import faiss
 
 class RAGEngine:
     def __init__(self):
@@ -23,7 +25,7 @@ class RAGEngine:
         # LLM
         # llm = Ollama(model="phi3:3.8b")
         Settings.llm = Ollama(
-            model="phi3:3.8b",
+            model="mistral:latest",
             # model="phi3:mini",
             request_timeout=120.0,
             # Manually set the context window to limit memory usage
@@ -34,7 +36,18 @@ class RAGEngine:
         Settings.chunk_overlap = 50
 
 
-        storage_context = StorageContext.from_defaults(persist_dir="vector_store")
+        # storage_context = StorageContext.from_defaults(persist_dir="vector_store3")
+        # index = load_index_from_storage(storage_context)
+        persist_dir = "../vector_store3"
+        faiss_index = faiss.read_index(f"{persist_dir}/vector_index.faiss")
+
+        vector_store = FaissVectorStore(faiss_index=faiss_index)
+
+        storage_context = StorageContext.from_defaults(
+            persist_dir=persist_dir,
+            vector_store=vector_store
+        )
+
         index = load_index_from_storage(storage_context)
         
         self.query_engine = index.as_query_engine(streaming=True, similarity_top_k=5, text_qa_template=rich_promt)

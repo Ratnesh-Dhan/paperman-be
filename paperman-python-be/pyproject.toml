@@ -1,0 +1,17 @@
+[project]
+name = "paperman-python-be"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "faiss-cpu>=1.13.2",
+    "fastapi>=0.129.0",
+    "llama-index>=0.14.15",
+    "llama-index-embeddings-huggingface>=0.6.1",
+    "llama-index-llms-ollama>=0.9.1",
+    "llama-index-vector-stores-faiss>=0.5.3",
+    "pydantic>=2.12.5",
+    "sentence-transformers>=5.2.3",
+    "uvicorn[standard]>=0.41.0",
+]

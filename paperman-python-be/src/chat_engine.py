@@ -1,11 +1,13 @@
 # from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 # from llama_index.llms.ollama import Ollama
-from llama_index.core import load_index_from_storage, Settings
-from llama_index.core.storage.storage_context import StorageContext
+import faiss
+from llama_index.vector_stores.faiss import FaissVectorStore
+from llama_index.core import load_index_from_storage, StorageContext
+# from llama_index.core.storage.storage_context import StorageContext
 from llama_index.core.storage.docstore import SimpleDocumentStore
-from llama_index.core.vector_stores.simple import SimpleVectorStore
-from llama_index.core.storage.kvstore.simple_kvstore import SimpleKVStore
-from llama_index.core import VectorStoreIndex
+# from llama_index.core.vector_stores.simple import SimpleVectorStore
+# from llama_index.core.storage.kvstore.simple_kvstore import SimpleKVStore
+# from llama_index.core import VectorStoreIndex
 from typing import AsyncGenerator
 import time
 import requests, json
@@ -14,7 +16,7 @@ class ChatEngine:
     def __init__(self):
         # Settings.embed_model = HuggingFaceEmbedding(model_name="sentence-transformers/all-MiniLM-L6-v2")
         # self.model = "mistral"
-        self.model = "phi3:3.8b"
+        self.model = "mistral:latest"
 
 
         # storage_context = StorageContext.from_defaults(persist_dir="vector_store")
@@ -22,22 +24,31 @@ class ChatEngine:
         # self.retriever = index.as_retriever()
         # self.chat_engine = index.as_chat_engine(streaming=True)
 
-        persist_dir = r"C:\Users\NDT Lab\Software\SCIENTIFIC-RAG\paperman-be\paperman-python-be\vector_store"
-        docstore = SimpleDocumentStore.from_persist_dir(persist_dir=persist_dir)
-        vector_store = SimpleDocumentStore.from_persist_dir(persist_dir)
-        # vector_store = SimpleVectorStore.from_persist_dir(persist_dir)
-        kvstore = SimpleKVStore.from_persist_path(persist_dir)
+        # persist_dir = r"C:\Users\NDT Lab\Software\SCIENTIFIC-RAG\paperman-be\paperman-python-be\vector_store"
+        ##//
+        persist_dir = "../vector_store3"
+        # docstore = SimpleDocumentStore.from_persist_dir(persist_dir=persist_dir)
+        # vector_store = SimpleDocumentStore.from_persist_dir(persist_dir)
+        # # vector_store = SimpleVectorStore.from_persist_dir(persist_dir)
+        # kvstore = SimpleKVStore.from_persist_path(persist_dir)
 
+        # storage_context = StorageContext.from_defaults(
+        #     docstore=docstore,
+        #     vector_store=vector_store,
+        #     kvstore=kvstore,
+        # )
+
+        # index = VectorStoreIndex.from_vector_store(
+        #     vector_store=vector_store,
+        #     storage_context=storage_context
+        # )
+        faiss_index = faiss.read_index(f"{persist_dir}/vector_index.faiss")
+        vector_store = FaissVectorStore(faiss_index=faiss_index)
         storage_context = StorageContext.from_defaults(
-            docstore=docstore,
-            vector_store=vector_store,
-            kvstore=kvstore,
+            persist_dir=persist_dir,
+            vector_store=vector_store
         )
-
-        index = VectorStoreIndex.from_vector_store(
-            vector_store=vector_store,
-            storage_context=storage_context
-        )
+        index = load_index_from_storage(storage_context)
 
         self.retriever = index.as_retriever(similarity_top_k=3)
         self.chat_engine = index.as_chat_engine(streaming=True)
