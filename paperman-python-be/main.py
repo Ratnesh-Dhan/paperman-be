@@ -9,7 +9,7 @@ from fastapi.responses import StreamingResponse
 import uvicorn
 
 app = FastAPI()
-RAGEngine = RAGEngine()
+# RAGEngine = RAGEngine()
 CHATEngine = ChatEngine()
 
 app.add_middleware(
@@ -28,21 +28,21 @@ async def chat_endpoint(data: Query):
     try:
         print("we are inside chat endpoint.")
         print("Query: ", data.query)
-        return StreamingResponse(CHATEngine.chat(data.query), media_type="event-stream")
+        return StreamingResponse(CHATEngine.chat(data.query), media_type="text/event-stream")
     except Exception as e:
         print(e)
         print("Error here")
         return {"error": str(e)}
 
-@app.post("/query")
-async def query_endpoint(data: Query):
-    try:
-        print("We are inside the query endpoint")
-        print("Query: ", data.query)
-        return StreamingResponse(RAGEngine.query(data.query), media_type="event-stream")
-    except Exception as e:
-        print(e)
-        return {"error": str(e)}
+# @app.post("/query")
+# async def query_endpoint(data: Query):
+#     try:
+#         print("We are inside the query endpoint")
+#         print("Query: ", data.query)
+#         return StreamingResponse(RAGEngine.query(data.query), media_type="event-stream")
+#     except Exception as e:
+#         print(e)
+#         return {"error": str(e)}
     
 @app.get("/test")
 def test_endpoint():
@@ -57,4 +57,4 @@ def test_run_endpoint():
     return {"Python server is running smoothly on server 8000"}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True, log_level="info")
+    uvicorn.run("main:app", host="localhost", port=8000, reload=True, log_level="info")

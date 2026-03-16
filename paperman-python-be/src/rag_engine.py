@@ -38,14 +38,13 @@ class RAGEngine:
 
         # storage_context = StorageContext.from_defaults(persist_dir="vector_store3")
         # index = load_index_from_storage(storage_context)
-        persist_dir = "../vector_store3"
-        faiss_index = faiss.read_index(f"{persist_dir}/vector_index.faiss")
+        persist_dir = "src/vector_store"
+        # faiss_index = faiss.read_index(f"{persist_dir}/vector_index.faiss")
 
-        vector_store = FaissVectorStore(faiss_index=faiss_index)
-
+        # vector_store = FaissVectorStore.from_persist_dir(persist_dir)
         storage_context = StorageContext.from_defaults(
             persist_dir=persist_dir,
-            vector_store=vector_store
+            # vector_store=vector_store
         )
 
         index = load_index_from_storage(storage_context)
@@ -63,3 +62,13 @@ class RAGEngine:
         except Exception as e:
             print(e)
             yield "Error: " + str(e)
+
+
+
+# from llama_index.core import load_index_from_storage
+
+# storage_context = StorageContext.from_defaults(
+#     persist_dir="../vector_store"
+# )
+
+# index = load_index_from_storage(storage_context)
