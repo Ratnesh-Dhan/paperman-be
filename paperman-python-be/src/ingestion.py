@@ -1,3 +1,5 @@
+from src.services.extractor import Extractor
+from src.services.nodes import Nodes
 import os
 import faiss
 
@@ -14,6 +16,9 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 class Ingestion:
     def __init__(self):
+        self.extractor = Extractor()
+        self.nodes = Nodes()
+        
         self.database = "papers"
         self.persist_dir = "vector_store"
 
