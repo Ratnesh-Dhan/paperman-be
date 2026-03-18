@@ -16,7 +16,7 @@ class Extractor:
 
     def split_into_sections(self, pages):
         sections = []
-        current_section = {"title": "Unknown", "content": "", "page": ""}
+        current_section = {"title": "Unknown", "content": "", "page": None}
 
         for page in pages:
             lines = page["text"].split("\n")
@@ -31,7 +31,8 @@ class Extractor:
 
                     current_section = {
                         "title": line,
-                        "content": ""
+                        "content": "",
+                        "page": page["page"]
                     }
                 else: 
                     current_section["content"] += line + " "
@@ -51,7 +52,8 @@ class Extractor:
             chunks.append({
                 "text": chunk_text,
                 "metadata": {
-                    "section": section["title"]
+                    "section": section["title"],
+                    "page": section["page"]
                 }
             })
         return chunks

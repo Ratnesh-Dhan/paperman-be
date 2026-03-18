@@ -8,4 +8,5 @@ __pycache__/
 vector_store/
 vector_store2/
 vector_store3/
+qdrant_data/
 .vscode/
