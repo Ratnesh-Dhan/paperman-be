@@ -79,15 +79,24 @@ class ChatEngine:
                 ])
             # Step 2: Build prompt
             prompt = f"""
-            1> Your name is **Paperman**. You are a helpful and knowledgeable research assistant.
-            2> If you cant find answers then clerly state that you do not have the context for it.
-            3> Use the following context to answer the user's question as clearly and helpfully as possible and do not make the answers too long.
+            You are Paperman, a precise research-paper assistant.
+
+            Rules:
+            - Answer ONLY from the provided context.
+            - Keep the answer concise and directly relevant.
+            - Use 3-5 bullet points instead of paragraphs whenever possible.
+            - Prefer key findings, numbers, observations, and conclusions.
+            - Do NOT explain unnecessary background.
+            - If the answer is not in the context, say exactly: "I do not have enough context from the paper."
+            - Do not invent or assume missing details.
 
             Context:
             {context_str}
 
             Question:
             {query}
+
+            Answer:
             """
             # Step 3: Stream directly from Ollama and yield word-by-word
             buffer = ""
