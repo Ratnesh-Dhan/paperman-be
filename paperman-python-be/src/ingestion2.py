@@ -40,15 +40,21 @@ class Ingestion2:
                 if file.endswith(".pdf"):
                     path = os.path.join(self.database, file)
 
-                    pages = self.extractor.extract_pdf_text(path)
-                    sections = self.extractor.split_into_sections(pages)
-                    nodes = self.nodes.create_nodes(sections)
-                    for n in nodes:
-                        if "section" not in n.metadata: 
-                            n.metadata["section"] = "UNKNOWN"
+                    # pages = self.extractor.extract_pdf_text(path)
+                    # sections = self.extractor.split_into_sections(pages)
+                    # nodes = self.nodes.create_nodes(sections)
+                    blocks = self.extractor.extract_blocks(path)
+                    chunks = self.extractor.chunk_blocks(blocks)
+                    nodes = self.nodes.create_nodes_from_chunks(chunks)
+                    # for n in nodes:
+                    #     section = n.metadata.get("section", "UNKNOWN")
+                    #     n.metadata["section"] = section.strip().upper()
+                    # for n in nodes[:3]:
+                    #     print(n.metadata)   
                     all_nodes.extend(nodes)
 
             print("Creating QDRANT index...")
+            client.delete_collection("papers")
             vector_store = QdrantVectorStore(
                 client=client,
                 collection_name="papers"
@@ -63,6 +69,7 @@ class Ingestion2:
                 storage_context=storage_context,
             )
             print("Ingestion completed successfully.")
+            return 200
 
         except Exception as e:
             raise e

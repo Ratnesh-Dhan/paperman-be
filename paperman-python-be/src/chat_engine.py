@@ -13,7 +13,9 @@ class ChatEngine:
             model_name="BAAI/bge-small-en-v1.5",
             normalize=True
         )
+        # self.model = "mistral:latest"
         self.model = "phi3:mini"
+
         # persist_dir = "src/vector_store"
         # faiss_index = faiss.read_index(f"{persist_dir}/vector_index.faiss")
         # vector_store = FaissVectorStore(faiss_index=faiss_index)
@@ -35,7 +37,7 @@ class ChatEngine:
         )
         self.retriever = index.as_retriever(
             similarity_top_k=3,
-            filters=filters
+            # filters=filters
         )
 
 
@@ -92,13 +94,6 @@ class ChatEngine:
             
             for chunk in self.stream_ollama(prompt):
                 yield chunk
-                # buffer += chunk
-                # while " " in buffer:
-                #     word, buffer = buffer.split(" ", 1)
-                #     yield word + " "
-                
-            
-            # Yield the last part if anything's left
             if buffer:
                 yield buffer
 

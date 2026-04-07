@@ -57,3 +57,63 @@ class Extractor:
                 }
             })
         return chunks
+
+    def extract_blocks(self, file_path):
+        doc = fitz.open(file_path)
+        blocks = []
+
+        for page_num, page in enumerate(doc, 1):
+            page_blocks = page.get_text("blocks")
+
+            for block in page_blocks:
+                text = block[4].strip()
+
+                # skip tiny junk blocks
+                if len(text) < 30:
+                    continue
+
+                # normalize whitespace
+                text = " ".join(text.split())
+
+                blocks.append({
+                    "page": page_num,
+                    "text": text
+                })
+
+        return blocks
+
+    def chunk_blocks(self, blocks, chunk_size=400, overlap=80):
+        chunks = []
+        current_words = []
+        current_pages = set()
+
+        for block in blocks:
+            words = block["text"].split()
+
+            # if adding this block exceeds chunk size
+            if len(current_words) + len(words) > chunk_size:
+                if current_words:
+                    chunks.append({
+                        "text": " ".join(current_words),
+                        "metadata": {
+                            "pages": sorted(current_pages)
+                        }
+                    })
+
+                # keep overlap words
+                current_words = current_words[-overlap:] if overlap < len(current_words) else current_words
+                current_pages = {block["page"]}
+
+            current_words.extend(words)
+            current_pages.add(block["page"])
+
+        # final leftover chunk
+        if current_words:
+            chunks.append({
+                "text": " ".join(current_words),
+                "metadata": {
+                    "pages": sorted(current_pages)
+                }
+            })
+
+        return chunks
