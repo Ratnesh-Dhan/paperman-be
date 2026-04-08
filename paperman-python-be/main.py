@@ -73,6 +73,15 @@ def test_endpoint():
         exception_name = type(e).__name__
         print("Error in testing : ",exception_name)
 
+@app.get("/files")
+def fetch_files():
+    try:
+        files = os.listdir(os.path.join("src", "papers"))
+        return {"files": files}
+    except Exception as e:
+        print(e)
+        return {"error": str(e)}
+
 @app.get("/")
 def test_run_endpoint():
     return {"Python server is running smoothly on server 8000"}
