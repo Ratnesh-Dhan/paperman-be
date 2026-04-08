@@ -13,9 +13,12 @@ Ingestion = Ingestion2(os.path.join("src", "papers"))
 
 app = FastAPI()
 # RAGEngine = RAGEngine()
-
+CHATEngine = None
 def get_chat_engine():
-    return ChatEngine()
+    global CHATEngine
+    if CHATEngine is None:
+        CHATEngine = ChatEngine()
+    return CHATEngine
 
 app.add_middleware(
     CORSMiddleware,
@@ -32,6 +35,8 @@ class Query(BaseModel):
 async def ingest_endpoint():
     try:
         status = Ingestion.run()
+        global CHATEngine
+        CHATEngine = ChatEngine()
         return {"success": status}
     except Exception as e:
         print(f"EXCEPTION DURING INGESTION --> {e}")

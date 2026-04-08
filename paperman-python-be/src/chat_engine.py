@@ -13,8 +13,8 @@ class ChatEngine:
             model_name="BAAI/bge-small-en-v1.5",
             normalize=True
         )
-        # self.model = "mistral:latest"
-        self.model = "phi3:mini"
+        self.model = "gpt-oss:20b"
+        # self.model = "phi3:mini"
 
         # persist_dir = "src/vector_store"
         # faiss_index = faiss.read_index(f"{persist_dir}/vector_index.faiss")
@@ -42,7 +42,8 @@ class ChatEngine:
 
 
     def stream_ollama(self, prompt:str):
-        buffer = "\n+==========================+"
+        # buffer used to be the custom dev generated string ending of the response.
+        buffer = None
         try:
             response = requests.post(
                 "http://localhost:11434/api/generate",
@@ -85,6 +86,7 @@ class ChatEngine:
             - Answer ONLY from the provided context.
             - Keep the answer concise and directly relevant.
             - Use 3-5 bullet points instead of paragraphs whenever possible.
+            - If there is a list of items then use bullet points to list them all.
             - Prefer key findings, numbers, observations, and conclusions.
             - Do NOT explain unnecessary background.
             - If the answer is not in the context, say exactly: "I do not have enough context from the paper."
